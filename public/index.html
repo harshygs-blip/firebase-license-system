@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBERAUTH - Central License Authority Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Platform Header -->
+    <header>
+      <div class="logo-area">
+        <div class="logo-icon">🛡️</div>
+        <div class="logo-text">
+          <h1>CYBERAUTH AUTHORITY</h1>
+          <p>Enterprise Central License Authority • Multi-Tenant API & Anti-Crack Shield</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <div id="connectionBadge" class="badge-pill pulsing">
+          <span>Authority Online: licence-management-4793d</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('tab-generator')">⚡ + Quick Key</button>
+        <button class="btn btn-outline btn-sm" onclick="openCreateAppModal()">📱 + New App</button>
+        <button id="downloadFullBackupBtn" class="btn btn-outline btn-sm">💾 Backup JSON</button>
+        <button id="refreshBtn" class="btn btn-outline btn-sm">🔄 Live Sync</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-dashboard">📊 Dashboard</button>
+      <button class="tab-btn" data-tab="tab-apps">📱 Applications (<span id="countTabApps" class="tab-count">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-licenses">🔑 License Manager (<span id="countTabLicenses" class="tab-count">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-generator">⚡ Key Generator & Bulk</button>
+      <button class="tab-btn" data-tab="tab-devices">💻 Device Manager (<span id="countTabDevices" class="tab-count">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-security">🛡️ Threat Radar (<span id="countTabThreats" class="tab-count">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-logs">📝 API Traffic Logs (<span id="countTabLogs" class="tab-count">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-docs">📚 SDKs & Live API Playground</button>
+    </nav>
+
+    <!-- TAB 1: DASHBOARD TELEMETRY -->
+    <div id="tab-dashboard" class="tab-content active">
+      <!-- Stats Overview -->
+      <section class="stats-grid">
+        <div class="stat-card glass">
+          <span class="stat-title">Registered Applications <span>📱</span></span>
+          <span class="stat-value" id="statTotalApps" style="color: var(--accent-cyan)">0</span>
+          <span class="stat-sub">Active software & bots authenticated</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-title">Active VIP Subscriptions <span>👑</span></span>
+          <span class="stat-value" id="statActiveKeys" style="color: var(--accent-green)">0</span>
+          <span class="stat-sub">Hardware-locked & currently valid</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-title">Total Bound Devices <span>💻</span></span>
+          <span class="stat-value" id="statTotalDevices" style="color: var(--accent-purple)">0</span>
+          <span class="stat-sub">Unique verified client HWIDs</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-title">Unused / Pending Keys <span>⏳</span></span>
+          <span class="stat-value" id="statUnusedKeys" style="color: var(--accent-amber)">0</span>
+          <span class="stat-sub">Ready for client activation</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-title">Revoked / Terminated <span>🚫</span></span>
+          <span class="stat-value" id="statRevokedKeys" style="color: var(--accent-red)">0</span>
+          <span class="stat-sub">Blocked or anti-tamper triggered</span>
+        </div>
+      </section>
+
+      <!-- Grid 2: Recent Activity & Architecture Specs -->
+      <div class="grid-2">
+        <!-- Live Activity Stream -->
+        <div class="glass">
+          <div class="card-header">
+            <h2>⚡ Live Activity Stream</h2>
+            <span class="badge-pill" style="font-size: 11px;">Real-Time Firestore Sync</span>
+          </div>
+          <div class="card-body">
+            <div id="activityStreamList" style="display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto;">
+              <div style="color: var(--text-muted); text-align: center; padding: 32px;">Listening for live activations and authority events...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Authority Controls & Architecture -->
+        <div class="glass">
+          <div class="card-header">
+            <h2>🛡️ Central License Architecture & Kill-Switch</h2>
+          </div>
+          <div class="card-body" style="display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: var(--text-secondary);">
+            <div style="padding: 12px 14px; background: rgba(0, 229, 255, 0.05); border-left: 3px solid var(--accent-cyan); border-radius: 4px;">
+              <strong style="color: var(--accent-cyan);">Multi-Tenant Isolation:</strong>
+              <p style="margin-top: 4px;">Each registered application uses an isolated <code>APP_ID</code> and cryptographic API key. A key issued for Developer A cannot unlock Developer B's software.</p>
+            </div>
+
+            <div style="padding: 12px 14px; background: rgba(0, 230, 118, 0.05); border-left: 3px solid var(--accent-green); border-radius: 4px;">
+              <strong style="color: var(--accent-green);">Hardware Fingerprint Binding (HWID):</strong>
+              <p style="margin-top: 4px;">Devices bind automatically on first verification. Admin can instantly reset HWID binding with 1-click to let users switch phones or PCs.</p>
+            </div>
+
+            <div style="padding: 12px 14px; background: rgba(255, 23, 68, 0.05); border-left: 3px solid var(--accent-red); border-radius: 4px;">
+              <strong style="color: var(--accent-red);">Active Anti-Crack & Self-Destruct:</strong>
+              <p style="margin-top: 4px;">Detection of Root, MT Manager, NP Manager, ZArchiver, or memory hooks immediately revokes the license and terminates the client app.</p>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <button class="btn btn-primary btn-sm" onclick="switchTab('tab-apps')">📱 Applications Registry</button>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('tab-generator')">⚡ Generate Keys</button>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('tab-security')">🛡️ View Threat Radar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: APPLICATIONS & API CREDENTIALS -->
+    <div id="tab-apps" class="tab-content">
+      <div class="glass" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2>📱 Registered Developer Ecosystems</h2>
+          <button class="btn btn-primary btn-sm" onclick="openCreateAppModal()">+ Register New Application</button>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+            Client software applications authorized to authenticate against this central license authority.
+          </p>
+
+          <!-- Dynamic App Cards Grid -->
+          <div class="app-cards-grid" id="appsCardsContainer">
+            <div style="color: var(--text-muted); padding: 24px;">Loading applications...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Credentials Table -->
+      <div class="glass">
+        <div class="card-header">
+          <h2>🔑 Application API Credentials Table</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Application Name</th>
+                  <th>App ID</th>
+                  <th>Platform</th>
+                  <th>API Public Key</th>
+                  <th>Secret Key</th>
+                  <th>Total Keys</th>
+                  <th>Maintenance Mode</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="appsTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    Connecting to Cloud Firestore...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: LICENSES REGISTRY -->
+    <div id="tab-licenses" class="tab-content">
+      <div class="glass">
+        <div class="card-header">
+          <h2>🔑 Central License Registry (<span id="licensesCountHeader">0</span>)</h2>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary btn-sm" onclick="switchTab('tab-generator')">+ Generate Key</button>
+            <button id="downloadCsvBtn" class="btn btn-outline btn-sm">📥 Export CSV</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <div class="search-input-wrap">
+              <input type="text" id="searchInput" placeholder="🔍 Search License Key, HWID, App, Customer Note...">
+            </div>
+            <div style="min-width: 180px;">
+              <select id="filterApp">
+                <option value="ALL">Filter by Application (All)</option>
+              </select>
+            </div>
+            <div style="min-width: 150px;">
+              <select id="filterStatus">
+                <option value="ALL">Status: All</option>
+                <option value="ACTIVE">ACTIVE 🟢</option>
+                <option value="UNUSED">UNUSED 🟡</option>
+                <option value="EXPIRED">EXPIRED 🔴</option>
+                <option value="SUSPENDED">SUSPENDED ⏸️</option>
+                <option value="REVOKED">REVOKED ⛔</option>
+              </select>
+            </div>
+            <div style="min-width: 140px;">
+              <select id="filterDuration">
+                <option value="ALL">Duration: All</option>
+                <option value="LIFETIME">Lifetime 👑</option>
+                <option value="30">Monthly (30D)</option>
+                <option value="7">7 Days</option>
+                <option value="1">1 Day Trial</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>License Key</th>
+                  <th>Application</th>
+                  <th>Plan / Validity</th>
+                  <th>Status</th>
+                  <th>Devices</th>
+                  <th>Bound HWID / Hardware</th>
+                  <th>Customer Note</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="licensesTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    Connecting to Cloud Firestore...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: KEY GENERATOR & BULK GENERATOR -->
+    <div id="tab-generator" class="tab-content">
+      <div class="grid-2">
+        <!-- Single & Custom Generator -->
+        <div class="glass">
+          <div class="card-header">
+            <h2>⚡ Single & Custom License Generator</h2>
+          </div>
+          <div class="card-body">
+            <form id="singleGenForm">
+              <div class="form-group">
+                <label for="singleAppId">Target Application</label>
+                <select id="singleAppId" required></select>
+              </div>
+
+              <div class="form-group">
+                <label for="singlePrefix">Custom Key Prefix (Optional)</label>
+                <input type="text" id="singlePrefix" placeholder="e.g. VIP, GARENA, PRO" style="text-transform: uppercase;">
+              </div>
+
+              <div class="form-group">
+                <label>Validity Duration Plan</label>
+                <div class="chip-group" id="durationChips">
+                  <button type="button" class="chip-btn" data-days="1">Trial (1 Day)</button>
+                  <button type="button" class="chip-btn" data-days="3">3 Days</button>
+                  <button type="button" class="chip-btn" data-days="7">7 Days</button>
+                  <button type="button" class="chip-btn active" data-days="30">Monthly (30D)</button>
+                  <button type="button" class="chip-btn" data-days="90">Quarterly (90D)</button>
+                  <button type="button" class="chip-btn" data-days="365">Yearly (1Y)</button>
+                  <button type="button" class="chip-btn" data-days="LIFETIME">Lifetime VIP 👑</button>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                  <label for="singleDeviceLimit">Device Limit</label>
+                  <select id="singleDeviceLimit">
+                    <option value="1" selected>1 Device (Hardware Locked)</option>
+                    <option value="2">2 Devices</option>
+                    <option value="3">3 Devices</option>
+                    <option value="5">5 Devices</option>
+                    <option value="999">Unlimited</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="singleNote">Customer Note / Telegram Handle</label>
+                  <input type="text" id="singleNote" placeholder="e.g. @harsh_client (Sold 5 Sep)">
+                </div>
+              </div>
+
+              <div style="margin: 14px 0; padding: 12px 14px; background: #06060B; border: 1px dashed var(--accent-cyan); border-radius: var(--radius-sm);">
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">LIVE KEY FORMAT PREVIEW:</div>
+                <div id="singleKeyPreview" style="font-family: var(--font-mono); font-size: 13px; color: var(--accent-cyan); font-weight: 700;">
+                  GARENA-30D-XXXX-YYYY
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 4px;">
+                🚀 Create License & Sync to Firestore
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Bulk Generator Panel -->
+        <div class="glass">
+          <div class="card-header">
+            <h2>📦 Enterprise Bulk License Generator</h2>
+          </div>
+          <div class="card-body">
+            <form id="bulkGenForm">
+              <div class="form-group">
+                <label for="bulkAppId">Target Application</label>
+                <select id="bulkAppId" required></select>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                  <label for="bulkQuantity">Number of Keys (Max 500)</label>
+                  <input type="number" id="bulkQuantity" min="5" max="500" value="20" required>
+                </div>
+                <div class="form-group">
+                  <label for="bulkDuration">Duration Plan</label>
+                  <select id="bulkDuration">
+                    <option value="1">1 Day</option>
+                    <option value="7">7 Days</option>
+                    <option value="30" selected>30 Days (Monthly)</option>
+                    <option value="90">90 Days</option>
+                    <option value="365">1 Year</option>
+                    <option value="LIFETIME">Lifetime VIP 👑</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="bulkNote">Batch Identifier / Reseller Tag</label>
+                <input type="text" id="bulkNote" placeholder="e.g. Reseller Batch #4 - Sept 2026">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                ⚡ Bulk Generate Batch & Sync to Cloud
+              </button>
+            </form>
+
+            <div id="bulkDownloadArea" style="display: none; margin-top: 18px; padding: 16px; background: #06060B; border: 1px dashed var(--accent-cyan); border-radius: var(--radius-sm);">
+              <p style="color: var(--accent-green); font-weight: 700; font-size: 13px; margin-bottom: 12px;">
+                ✓ <span id="bulkSuccessMsg">20 keys generated successfully!</span>
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button id="btnDownloadCsv" class="btn btn-outline btn-sm" style="flex: 1;">📥 Download CSV</button>
+                <button id="btnDownloadTxt" class="btn btn-outline btn-sm" style="flex: 1;">📄 Download TXT</button>
+                <button id="btnDownloadJson" class="btn btn-outline btn-sm" style="flex: 1;">📦 Download JSON</button>
+                <button id="btnCopyBulk" class="btn btn-outline btn-sm" style="flex: 1;">📋 Copy All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: DEVICE MANAGER -->
+    <div id="tab-devices" class="tab-content">
+      <div class="glass">
+        <div class="card-header">
+          <h2>💻 Bound Hardware Devices (<span id="countDevicesHeader">0</span>)</h2>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+            Hardware IDs currently bound to active licenses. You can reset device bindings or blacklist fraudulent hardware.
+          </p>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Device Hardware ID (HWID)</th>
+                  <th>Application</th>
+                  <th>Bound License Key</th>
+                  <th>Hardware / Model</th>
+                  <th>First Bound</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="devicesTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    No hardware devices currently bound.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: SECURITY & THREAT RADAR -->
+    <div id="tab-security" class="tab-content">
+      <div class="glass">
+        <div class="card-header">
+          <h2>🛡️ Threat Radar & Anti-Crack Telemetry (<span id="threatsCountHeader">0</span>)</h2>
+          <button class="btn btn-outline btn-sm" onclick="clearThreatLogs()">Clear Threat Stream</button>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-secondary); margin-bottom: 18px; font-size: 14px;">
+            Real-time security events captured by client-side <code>SecurityGuard</code> (Root su, MT Manager, NP Manager, ZArchiver, Hooking tools, Memory patch attempts).
+          </p>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Application</th>
+                  <th>Threat Detected</th>
+                  <th>Device HWID</th>
+                  <th>Severity</th>
+                  <th>Action Executed</th>
+                  <th>Admin Controls</th>
+                </tr>
+              </thead>
+              <tbody id="threatsTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    Shield active. No security threats or crack attempts detected.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: API TRAFFIC LOGS -->
+    <div id="tab-logs" class="tab-content">
+      <div class="glass">
+        <div class="card-header">
+          <h2>📝 Real-Time Verification & Activation Logs</h2>
+          <button class="btn btn-outline btn-sm" onclick="clearLiveLogs()">Clear Logs</button>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-secondary); margin-bottom: 18px; font-size: 14px;">
+            Live telemetry of verification requests hitting your central license authority.
+          </p>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Application</th>
+                  <th>License Key</th>
+                  <th>Endpoint</th>
+                  <th>Status</th>
+                  <th>HWID / Device</th>
+                  <th>Response Time</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    Waiting for client license verification calls...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: DEVELOPER DOCS, SDKS & LIVE PLAYGROUND -->
+    <div id="tab-docs" class="tab-content">
+      <!-- Live API Tester / Playground -->
+      <div class="glass" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2>🧪 Interactive Live API Playground</h2>
+          <span class="badge-pill" style="font-size: 11px;">Test Verification in Browser</span>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+            Verify any license key and hardware binding right now to see the exact JSON response and latency.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: flex-end;">
+            <div class="form-group" style="margin: 0;">
+              <label for="testKeyInput">Test License Key</label>
+              <input type="text" id="testKeyInput" placeholder="e.g. GARENA-30D-XXXX-YYYY">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="testHwidInput">Test Hardware ID (HWID)</label>
+              <input type="text" id="testHwidInput" placeholder="e.g. device_test_hwid_123">
+            </div>
+            <button id="btnRunApiTest" class="btn btn-primary" style="height: 42px;">🚀 Test Verification</button>
+          </div>
+
+          <div id="testResultArea" style="display: none; margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span id="testStatusBadge" class="status-badge status-active">200 OK</span>
+              <span id="testLatency" style="color: var(--accent-green); font-family: var(--font-mono); font-size: 12px;">38ms</span>
+            </div>
+            <pre id="testResultJson" class="code-block" style="margin: 0; max-height: 240px;"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer SDK Snippets -->
+      <div class="glass">
+        <div class="card-header">
+          <h2>📚 Ready-to-Use SDK Snippets</h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="margin: 0; font-size: 12px; color: var(--text-secondary);">Target Application:</label>
+            <select id="docAppSelector" style="width: 240px; padding: 6px 12px; font-size: 12px;"></select>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Snippet 1: Android Kotlin -->
+          <h3 style="font-size: 15px; color: var(--accent-cyan); margin-top: 14px;">📱 1. Android Kotlin (Native Integration)</h3>
+          <div class="code-block" id="snippetKotlin"></div>
+
+          <!-- Snippet 2: Python -->
+          <h3 style="font-size: 15px; color: var(--accent-green); margin-top: 24px;">🐍 2. Python (Desktop Automation / Bots)</h3>
+          <div class="code-block" id="snippetPython"></div>
+
+          <!-- Snippet 3: C# / .NET -->
+          <h3 style="font-size: 15px; color: var(--accent-purple); margin-top: 24px;">💻 3. C# / .NET (Windows Software)</h3>
+          <div class="code-block" id="snippetCSharp"></div>
+
+          <!-- Snippet 4: cURL -->
+          <h3 style="font-size: 15px; color: var(--accent-amber); margin-top: 24px;">🌐 4. Raw REST API (cURL)</h3>
+          <div class="code-block" id="snippetCurl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Application Modal -->
+  <div id="createAppModal" class="modal-overlay">
+    <div class="glass modal-dialog">
+      <div class="card-header">
+        <h2>📱 Register New Application</h2>
+        <button onclick="closeCreateAppModal()" style="background: transparent; border: none; color: #FFF; font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+      <div class="card-body">
+        <form id="createAppForm">
+          <div class="form-group">
+            <label for="appNameInput">Application Name</label>
+            <input type="text" id="appNameInput" placeholder="e.g. My Premium Software" required>
+          </div>
+          <div class="form-group">
+            <label for="appIdInput">Application ID (Slug)</label>
+            <input type="text" id="appIdInput" placeholder="e.g. app_premium_tool" required>
+          </div>
+          <div class="form-group">
+            <label for="appPlatformInput">Target Platform</label>
+            <select id="appPlatformInput">
+              <option value="Android">Android</option>
+              <option value="Windows">Windows</option>
+              <option value="macOS">macOS</option>
+              <option value="Linux">Linux</option>
+              <option value="Web">Web Application</option>
+              <option value="Multi-Platform">Multi-Platform (Universal)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="appDescInput">Description (Optional)</label>
+            <input type="text" id="appDescInput" placeholder="e.g. High speed VIP account manager">
+          </div>
+          <div style="display: flex; gap: 12px; margin-top: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Register & Generate API Keys</button>
+            <button type="button" onclick="closeCreateAppModal()" class="btn btn-outline" style="flex: 1;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generated Keys Success Modal -->
+  <div id="successModal" class="modal-overlay">
+    <div class="glass modal-dialog">
+      <div class="card-header" style="background: rgba(0, 229, 255, 0.08);">
+        <h2 style="color: var(--accent-cyan); font-size: 18px;">🎉 License Generated Successfully!</h2>
+        <button onclick="closeSuccessModal()" style="background: transparent; border: none; color: #FFF; font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          Saved directly to Cloud Firestore Authority. Ready for client software activation:
+        </p>
+        <div style="background: #06060B; border: 1px dashed var(--accent-cyan); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px;">
+          <pre id="modalKeysPre" style="font-family: var(--font-mono); font-size: 14px; color: var(--accent-cyan); white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto;"></pre>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button id="modalCopyBtn" class="btn btn-primary" style="flex: 1;">📋 Copy Keys</button>
+          <button onclick="viewInTableFromModal()" class="btn btn-outline" style="flex: 1;">🔍 View in Registry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast" class="toast"></div>
+
+  <!-- App logic with Firebase v10 SDK & Fast REST synchronization -->
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>

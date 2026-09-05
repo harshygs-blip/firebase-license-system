@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "licence-management-4793d"
+  },
+  "targets": {
+    "licence-management-4793d": {
+      "hosting": {
+        "licencemanger": [
+          "licencemanger"
+        ]
+      }
+    }
+  }
+}

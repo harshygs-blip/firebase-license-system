@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permit read and write for the license authority platform
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
